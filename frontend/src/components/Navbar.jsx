@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
+import GooeyNav from './ui/Navbareffects'
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,11 +16,12 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'About', href: '#about' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Education', href: '#education' },
-    { name: 'Contact', href: '#contact' },
+    { label: 'About', href: '#about' },
+    { label: 'Skills', href: '#skills' },
+    { label: 'Projects', href: '#projects' },
+    { label: 'Education', href: '#education' },
+    { label: 'Courses', href: '#courses' },
+    { label: 'Contact', href: '#contact' },
   ];
 
   return (
@@ -34,21 +36,13 @@ export default function Navbar() {
               Pranav.
             </a>
           </div>
-          
-          <div className="hidden md:flex space-x-8">
-            {navLinks.map((link) => (
-              <a 
-                key={link.name}
-                href={link.href} 
-                className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
-              >
-                {link.name}
-              </a>
-            ))}
+
+          <div className="hidden md:flex items-center">
+            <GooeyNav items={navLinks} />
           </div>
 
           <div className="md:hidden flex items-center">
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-foreground focus:outline-none"
             >
@@ -64,12 +58,12 @@ export default function Navbar() {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navLinks.map((link) => (
               <a
-                key={link.name}
+                key={link.label}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50"
               >
-                {link.name}
+                {link.label}
               </a>
             ))}
           </div>

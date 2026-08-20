@@ -13,12 +13,17 @@ export default function Projects({ data }) {
   };
 
   const item = {
-    hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0 }
+    hidden: { opacity: 0, scale: 0.9, rotateY: 15 },
+    show: { 
+      opacity: 1, 
+      scale: 1, 
+      rotateY: 0,
+      transition: { type: 'spring', stiffness: 100, damping: 15 }
+    }
   };
 
   return (
-    <section id="projects" className="py-24">
+    <section id="projects" className="py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -36,13 +41,14 @@ export default function Projects({ data }) {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="flex overflow-x-auto snap-x snap-mandatory gap-8 pb-12 pt-4 px-4 -mx-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {data.map((project, index) => (
             <motion.div
               key={index}
               variants={item}
-              className="group relative bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+              viewport={{ once: false, amount: 0.3 }}
+              className="snap-center shrink-0 w-[85vw] md:w-[400px] group relative bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
