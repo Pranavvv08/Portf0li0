@@ -23,7 +23,7 @@ export default function Projects({ data }) {
   };
 
   return (
-    <section id="projects" className="py-24 overflow-hidden">
+    <section id="projects" className="py-16 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -68,27 +68,27 @@ export default function Projects({ data }) {
                   </a>
                 </div>
 
-                <p className="text-muted-foreground text-sm mb-6 flex-1">
-                  {project.description}
-                </p>
+                <div className="flex-1 flex flex-col">
+                  <p className="text-muted-foreground text-sm mb-6">
+                    {project.description}
+                  </p>
 
-                <div className="space-y-4">
-                  <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                  <ul className="list-disc list-inside text-sm text-muted-foreground space-y-2 mb-6">
                     {project.bullets.map((bullet, i) => (
-                      <li key={i} className="line-clamp-2" title={bullet}>{bullet}</li>
+                      <li key={i} title={bullet}>{bullet}</li>
                     ))}
                   </ul>
+                </div>
 
-                  <div className="flex flex-wrap gap-2 pt-4 border-t border-border/50">
-                    {project.stack.map(tech => (
-                      <span
-                        key={tech}
-                        className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs font-semibold tracking-wide"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap gap-2 pt-4 border-t border-border/50">
+                  {project.stack.map(tech => (
+                    <span
+                      key={tech}
+                      className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs font-semibold tracking-wide"
+                    >
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               </div>
             </motion.div>

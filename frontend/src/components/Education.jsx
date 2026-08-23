@@ -3,7 +3,7 @@ import { GraduationCap, Award } from 'lucide-react';
 
 export default function Education({ education, certifications }) {
   return (
-    <section id="education" className="py-24 relative overflow-hidden">
+    <section id="education" className="py-16 relative overflow-hidden">
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -z-10" />
 
