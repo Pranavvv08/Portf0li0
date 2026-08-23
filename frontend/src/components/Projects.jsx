@@ -48,18 +48,21 @@ export default function Projects({ data }) {
               key={index}
               variants={item}
               viewport={{ once: false, amount: 0.3 }}
-              className="snap-center shrink-0 w-[85vw] md:w-[400px] group relative bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col"
+              className="snap-center shrink-0 w-[85vw] md:w-[420px] group relative bg-background/40 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 transition-all duration-500 flex flex-col"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              {/* Optional glowing orb behind card on hover */}
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-              <div className="p-6 flex-1 flex flex-col z-10">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold">{project.title}</h3>
+              <div className="p-8 flex-1 flex flex-col z-10 relative">
+                <div className="flex justify-between items-start mb-6">
+                  <h3 className="text-2xl font-bold tracking-tight">{project.title}</h3>
                   <a
                     href={project.link}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors p-2 bg-secondary rounded-full"
+                    className="text-muted-foreground hover:text-primary transition-colors p-3 bg-white/5 hover:bg-white/10 rounded-full border border-white/5"
                   >
                     <FaGithub className="h-5 w-5" />
                   </a>
