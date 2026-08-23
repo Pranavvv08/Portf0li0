@@ -94,7 +94,7 @@ async function seed() {
       const cr = content.courses[i];
       await db.query(
         'INSERT INTO courses (title, instructor, takeaway, display_order) VALUES ($1, $2, $3, $4)',
-        [cr.title, cr.instructor, cr.takeaway, i]
+        [cr.title || cr.Title, cr.instructor || cr.Instructor, cr.takeaway || cr.Takeaway, i]
       );
     }
     console.log('  ✓ Courses');
