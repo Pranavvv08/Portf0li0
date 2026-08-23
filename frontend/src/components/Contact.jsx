@@ -126,6 +126,7 @@ export default function Contact({ data }) {
                     <label htmlFor="name" className="text-sm font-medium">Name</label>
                     <input
                       required
+                      autoComplete="name"
                       type="text"
                       id="name"
                       value={form.name}
@@ -138,6 +139,7 @@ export default function Contact({ data }) {
                     <label htmlFor="email" className="text-sm font-medium">Email</label>
                     <input
                       required
+                      autoComplete="email"
                       type="email"
                       id="email"
                       value={form.email}
