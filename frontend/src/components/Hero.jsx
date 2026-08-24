@@ -48,7 +48,7 @@ export default function Hero({ data }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+            className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-center"
           >
             {data.intro}
           </motion.p>

@@ -69,13 +69,13 @@ export default function Projects({ data }) {
                 </div>
 
                 <div className="flex-1 flex flex-col">
-                  <p className="text-muted-foreground text-sm mb-6">
+                  <p className="text-muted-foreground text-sm mb-6 text-justify">
                     {project.description}
                   </p>
 
                   <ul className="list-disc list-inside text-sm text-muted-foreground space-y-2 mb-6">
                     {project.bullets.map((bullet, i) => (
-                      <li key={i} title={bullet}>{bullet}</li>
+                      <li key={i} title={bullet} className="text-justify">{bullet}</li>
                     ))}
                   </ul>
                 </div>

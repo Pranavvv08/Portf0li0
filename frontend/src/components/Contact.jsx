@@ -42,12 +42,12 @@ export default function Contact({ data }) {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
           <div className="h-1 w-20 bg-primary mx-auto rounded-full mb-8" />
-          <p className="max-w-2xl mx-auto text-muted-foreground text-lg">
+          <p className="max-w-2xl mx-auto text-muted-foreground text-lg text-center">
             {data.message}
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start max-w-5xl mx-auto">
           {/* Contact Information */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -56,26 +56,26 @@ export default function Contact({ data }) {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="space-y-8"
           >
-            <div className="bg-card border rounded-2xl p-8 shadow-sm">
+            <div className="bg-card border rounded-2xl p-5 sm:p-8 shadow-sm">
               <h3 className="text-2xl font-semibold mb-6">Contact Details</h3>
               <div className="space-y-6 text-muted-foreground">
-                <a href={`mailto:${data.email}`} className="flex items-center gap-4 hover:text-foreground transition-colors group">
-                  <div className="p-3 bg-primary/10 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                <a href={`mailto:${data.email}`} className="flex items-center gap-4 hover:text-foreground transition-colors group min-w-0">
+                  <div className="p-3 bg-primary/10 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
                     <Mail className="h-5 w-5" />
                   </div>
-                  <span>{data.email}</span>
+                  <span className="truncate text-sm sm:text-base">{data.email}</span>
                 </a>
                 <a href={`tel:${data.phone}`} className="flex items-center gap-4 hover:text-foreground transition-colors group">
-                  <div className="p-3 bg-primary/10 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <div className="p-3 bg-primary/10 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
                     <Phone className="h-5 w-5" />
                   </div>
-                  <span>{data.phone}</span>
+                  <span className="text-sm sm:text-base">{data.phone}</span>
                 </a>
                 <div className="flex items-center gap-4 group">
-                  <div className="p-3 bg-primary/10 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <div className="p-3 bg-primary/10 rounded-full text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
                     <MapPin className="h-5 w-5" />
                   </div>
-                  <span>{data.location}</span>
+                  <span className="text-sm sm:text-base">{data.location}</span>
                 </div>
               </div>
 
@@ -120,7 +120,7 @@ export default function Contact({ data }) {
                 </button>
               </div>
             ) : (
-              <form className="bg-card border rounded-2xl p-8 shadow-sm space-y-6" onSubmit={handleSubmit}>
+              <form className="bg-card border rounded-2xl p-5 sm:p-8 shadow-sm space-y-6" onSubmit={handleSubmit}>
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label htmlFor="name" className="text-sm font-medium">Name</label>
@@ -184,7 +184,7 @@ export default function Contact({ data }) {
         </div>
       </div>
 
-      <div className="mt-24 text-center text-sm text-muted-foreground">
+      <div className="mt-16 text-center text-sm text-muted-foreground px-4">
         <p>{data.footerTagline}</p>
         <p className="mt-2">© {new Date().getFullYear()} Pranav Sasank Palivela. All rights reserved.</p>
       </div>

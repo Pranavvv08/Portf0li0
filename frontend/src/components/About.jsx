@@ -21,7 +21,7 @@ export default function About({ data }) {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="space-y-6 text-muted-foreground leading-relaxed whitespace-pre-wrap"
+            className="space-y-6 text-muted-foreground leading-relaxed whitespace-pre-wrap text-justify"
           >
             {data.description}
           </motion.div>
@@ -38,7 +38,7 @@ export default function About({ data }) {
               {data.quickFacts.map((fact, index) => (
                 <li key={index} className="flex items-start">
                   <span className="text-xl mr-3">{fact.split(' ')[0]}</span>
-                  <span className="text-muted-foreground">{fact.split(' ').slice(1).join(' ')}</span>
+                  <span className="text-muted-foreground text-justify">{fact.split(' ').slice(1).join(' ')}</span>
                 </li>
               ))}
             </ul>

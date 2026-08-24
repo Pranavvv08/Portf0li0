@@ -34,7 +34,7 @@ export default function Courses({ data }) {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Courses & Learnings</h2>
           <div className="h-1 w-20 bg-primary rounded-full mb-8" />
-          <p className="text-muted-foreground max-w-2xl text-lg">
+          <p className="text-muted-foreground max-w-2xl text-lg text-justify">
             A deeper dive into the specific coursework and resources that have shaped my technical foundation and intuition.
           </p>
         </motion.div>
@@ -65,7 +65,7 @@ export default function Courses({ data }) {
                 <p className="text-sm font-semibold text-primary/80 mb-6 uppercase tracking-wider">{course.instructor}</p>
                 <div className="flex-1 bg-white/5 border border-white/5 rounded-2xl p-5 relative">
                   <span className="absolute -top-3 -left-2 text-4xl text-primary/30 font-serif">"</span>
-                  <p className="text-muted-foreground/90 leading-relaxed text-sm italic relative z-10 pl-2">
+                  <p className="text-muted-foreground/90 leading-relaxed text-sm italic relative z-10 pl-2 text-justify">
                     {course.takeaway}
                   </p>
                 </div>
