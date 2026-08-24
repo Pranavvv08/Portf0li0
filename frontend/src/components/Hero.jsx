@@ -66,7 +66,7 @@ export default function Hero({ data }) {
               View Projects <ArrowRight className="ml-2 h-4 w-4" />
             </a>
             <a
-              href="/resume.pdf"
+              href="https://drive.google.com/file/d/1thb0c5X1MdVYnqEm7iE7nc9eq5yfFwGO/view?usp=sharing"
               target="_blank"
               className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-input bg-background font-medium hover:bg-accent hover:text-accent-foreground transition-colors w-full sm:w-auto"
             >
