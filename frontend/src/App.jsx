@@ -9,6 +9,7 @@ import Courses from './components/Courses';
 import Contact from './components/Contact';
 import Threads from './components/ui/Threads';
 import { fetchPortfolioContent } from './lib/api';
+import SmoothScroll from './components/SmoothScroll';
 
 function LoadingSkeleton() {
   return (
@@ -60,6 +61,7 @@ function App() {
   }
 
   return (
+    <SmoothScroll>
     <div className="min-h-screen bg-background font-sans antialiased text-foreground selection:bg-primary selection:text-primary-foreground">
       <Navbar />
 
@@ -93,6 +95,7 @@ function App() {
 
       </main>
     </div>
+    </SmoothScroll>
   );
 }
 
