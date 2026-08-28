@@ -6,14 +6,16 @@ export default function SmoothScroll({ children }) {
     <ReactLenis
       root
       options={{
-  lerp: 0.08,
-  duration: 1.2,
-  smoothWheel: true,
-  smoothTouch: false,
-  wheelMultiplier: 1,
-  anchors: true,
-  autoRaf: true,
-}}
+        lerp: 0.12,
+        duration: 1.2,
+        smoothWheel: true,
+        smoothTouch: false,
+        touchMultiplier: 1.5,
+        syncTouch: false,
+        wheelMultiplier: 1,
+        anchors: true,
+        autoRaf: true,
+      }}
     >
       {children}
     </ReactLenis>

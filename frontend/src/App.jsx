@@ -7,7 +7,7 @@ import Projects from './components/Projects';
 import Education from './components/Education';
 import Courses from './components/Courses';
 import Contact from './components/Contact';
-import Threads from './components/ui/Threads';
+import MoltenMetal from './components/ui/MoltenMetal';
 import { fetchPortfolioContent } from './lib/api';
 import SmoothScroll from './components/SmoothScroll';
 
@@ -28,13 +28,17 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let cancelled = false;
     fetchPortfolioContent()
-      .then(setData)
+      .then((res) => { if (!cancelled) setData(res); })
       .catch((err) => {
-        console.error('Failed to fetch portfolio data:', err);
-        setError(err.message);
+        if (!cancelled) {
+          console.error('Failed to fetch portfolio data:', err);
+          setError(err.message);
+        }
       })
-      .finally(() => setLoading(false));
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   if (loading) return <LoadingSkeleton />;
@@ -61,25 +65,36 @@ function App() {
   }
 
   return (
-    <SmoothScroll>
-    <div className="min-h-screen bg-background font-sans antialiased text-foreground selection:bg-primary selection:text-primary-foreground">
-      <Navbar />
+    <>
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <MoltenMetal
+          color1="#5227FF"
+          color2="#FF9FFC"
+          color3="#FFFFFF"
+          speed={0.1}
+          scale={4}
+          detail={2}
+          glow={1.2}
+          coreSize={0.1}
+          swirl={0.8}
+          fold={-0.15}
+          blackPoint={0.05}
+          brightness={1.1}
+          colorMode="molten"
+          grain={false}
+          mouseInteraction={false}
+          opacity={0.8}
+        />
+      </div>
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-black/40" />
+      <SmoothScroll>
+        <div className="relative min-h-screen bg-transparent font-sans antialiased text-foreground selection:bg-primary selection:text-primary-foreground z-10">
+          <Navbar />
 
-      <main>
-        <div className="relative overflow-hidden">
-          <Hero data={data.hero} />
-          <About data={data.about} />
-          <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
-            <Threads
-              amplitude={10}
-              distance={0}
-              enableMouseInteraction
-            />
-          </div>
-
-          <div className="relative z-10">
+          <main>
+            <Hero data={data.hero} />
+            <About data={data.about} />
             <Skills data={data.skills} />
-
             <Projects data={data.projects} />
 
             <Education
@@ -88,15 +103,11 @@ function App() {
             />
 
             <Courses data={data.courses} />
-          </div>
-
-          <Contact data={data.contact} />
+            <Contact data={data.contact} />
+          </main>
         </div>
-
-      </main>
-    </div>
-    </SmoothScroll>
+      </SmoothScroll>
+    </>
   );
 }
-
 export default App;
