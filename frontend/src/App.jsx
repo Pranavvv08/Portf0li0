@@ -26,6 +26,13 @@ function LoadingSkeleton() {
     </div>
   );
 }
+useEffect(() => {
+  const apiUrl = import.meta.env.VITE_RAG_API_URL;
+  if (apiUrl) {
+    fetch(`${apiUrl}/health`).catch(() => {});
+  }
+}, []);
+
 
 function App() {
   const [data, setData] = useState(null);
