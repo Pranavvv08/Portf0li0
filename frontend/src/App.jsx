@@ -11,6 +11,8 @@ import MoltenMetal from './components/ui/MoltenMetal';
 import { fetchPortfolioContent } from './lib/api';
 import SmoothScroll from './components/SmoothScroll';
 import { ThinkingOrb } from 'thinking-orbs';
+import ChatWidget from './components/ChatWidget';
+
 
 function LoadingSkeleton() {
   return (
@@ -109,6 +111,7 @@ function App() {
             <Contact data={data.contact} />
           </main>
         </div>
+        <ChatWidget />
       </SmoothScroll>
     </>
   );
