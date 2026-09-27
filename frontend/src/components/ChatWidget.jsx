@@ -7,7 +7,8 @@ import {
   RotateCcw,
   Bot,
   Zap,
-  ChevronRight,
+  Server,
+  Clock,
 } from "lucide-react";
 
 const STARTER_PROMPTS = [
@@ -76,6 +77,9 @@ export default function ChatWidget() {
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [hasReceivedFirstResponse, setHasReceivedFirstResponse] = useState(false);
+  const [loadingSeconds, setLoadingSeconds] = useState(0);
+
   const scrollRef = useRef(null);
   const endRef = useRef(null);
   const inputRef = useRef(null);
@@ -85,11 +89,25 @@ export default function ChatWidget() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping, isOpen]);
+  }, [messages, isTyping, isOpen, loadingSeconds]);
 
   useEffect(() => {
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 350);
   }, [isOpen]);
+
+  // Timer for first response to show live counter while server is waking up
+  useEffect(() => {
+    let timer;
+    if (isTyping && !hasReceivedFirstResponse) {
+      setLoadingSeconds(0);
+      timer = setInterval(() => {
+        setLoadingSeconds((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setLoadingSeconds(0);
+    }
+    return () => clearInterval(timer);
+  }, [isTyping, hasReceivedFirstResponse]);
 
   const handleSend = async (textToSend) => {
     const query = (textToSend || input).trim();
@@ -108,10 +126,12 @@ export default function ChatWidget() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: data.answer || "I don't have that in my knowledge base yet." },
       ]);
+      setHasReceivedFirstResponse(true);
     } catch (err) {
       console.error("Chat error:", err);
       setMessages((prev) => [
@@ -119,7 +139,7 @@ export default function ChatWidget() {
         {
           role: "assistant",
           content:
-            "I couldn't reach my AI backend. If you're running locally, make sure the RAG server is live on `http://localhost:8000`.",
+            "I couldn't reach my AI backend right now. Please try again in a few moments.",
         },
       ]);
     } finally {
@@ -127,13 +147,14 @@ export default function ChatWidget() {
     }
   };
 
-  const handleReset = () =>
+  const handleReset = () => {
     setMessages([
       {
         role: "assistant",
         content: "Fresh start ✨ What else would you like to know about Pranav?",
       },
     ]);
+  };
 
   return (
     <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-[9999] font-sans">
@@ -173,8 +194,8 @@ export default function ChatWidget() {
             >
               <span className="absolute -top-[3px] left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-fuchsia-400 shadow-[0_0_10px_#e879f9]" />
             </span>
-            {/* label pill — appears on hover, anchored so it never clips */}
-            <span className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-full bg-zinc-950/95 border border-violet-500/40 px-3.5 py-1.5 text-xs font-medium text-violet-200 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shadow-[0_0_20px_rgba(124,58,237,0.4)]">
+            {/* label pill */}
+            <span className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-full bg-zinc-950/95 border border-violet-500/40 px-3.5 py-1.5 text-xs font-medium text-violet-200 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shadow-[0_0_20px_rgba(124,58,237,0.4)]">
               Ask my AI ✦
             </span>
           </motion.button>
@@ -223,15 +244,17 @@ export default function ChatWidget() {
                     {/* breathing avatar */}
                     <div className="relative">
                       <motion.div
-                        animate={{ boxShadow: [
-                          "0 0 0px rgba(139,92,246,0.0)",
-                          "0 0 18px rgba(139,92,246,0.6)",
-                          "0 0 0px rgba(139,92,246,0.0)",
-                        ] }}
+                        animate={{
+                          boxShadow: [
+                            "0 0 0px rgba(139,92,246,0.0)",
+                            "0 0 18px rgba(139,92,246,0.6)",
+                            "0 0 0px rgba(139,92,246,0.0)",
+                          ],
+                        }}
                         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
                         className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 via-purple-600 to-fuchsia-600 flex items-center justify-center"
                       >
-                        <Bot className="w-5.5 h-5.5 w-6 h-6 text-white" />
+                        <Bot className="w-6 h-6 text-white" />
                       </motion.div>
                       <span className="absolute -bottom-0.5 -right-0.5 flex">
                         <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
@@ -315,27 +338,62 @@ export default function ChatWidget() {
                   );
                 })}
 
-                {/* typing indicator */}
+                {/* typing indicator & cold-start notice */}
                 {isTyping && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-end gap-2"
-                  >
-                    <div className="w-7 h-7 shrink-0 rounded-lg bg-gradient-to-br from-violet-600/40 to-fuchsia-600/40 border border-violet-400/30 flex items-center justify-center">
-                      <Sparkles className="w-3.5 h-3.5 text-violet-300 animate-pulse" />
-                    </div>
-                    <div className="px-4 py-3.5 rounded-[20px] rounded-bl-md bg-white/[0.06] border border-white/10 flex items-center gap-1.5">
-                      {[0, 1, 2].map((d) => (
-                        <motion.span
-                          key={d}
-                          animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
-                          transition={{ duration: 0.9, repeat: Infinity, delay: d * 0.15 }}
-                          className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-400"
-                        />
-                      ))}
-                    </div>
-                  </motion.div>
+                  <div className="space-y-3">
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-end gap-2"
+                    >
+                      <div className="w-7 h-7 shrink-0 rounded-lg bg-gradient-to-br from-violet-600/40 to-fuchsia-600/40 border border-violet-400/30 flex items-center justify-center">
+                        <Sparkles className="w-3.5 h-3.5 text-violet-300 animate-pulse" />
+                      </div>
+                      <div className="px-4 py-3.5 rounded-[20px] rounded-bl-md bg-white/[0.06] border border-white/10 flex items-center gap-1.5">
+                        {[0, 1, 2].map((d) => (
+                          <motion.span
+                            key={d}
+                            animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
+                            transition={{ duration: 0.9, repeat: Infinity, delay: d * 0.15 }}
+                            className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-400"
+                          />
+                        ))}
+                      </div>
+                    </motion.div>
+
+                    {/* Cold-start notification banner (shown ONLY during the very first response loading) */}
+                    {!hasReceivedFirstResponse && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.35 }}
+                        className="mx-1 p-3 rounded-2xl bg-gradient-to-r from-violet-950/70 via-purple-950/50 to-zinc-900/80 border border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.15)] backdrop-blur-md"
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <div className="mt-0.5 p-1.5 rounded-lg bg-violet-500/20 text-violet-300 shrink-0">
+                            <Server className="w-3.5 h-3.5 animate-pulse" />
+                          </div>
+                          <div className="space-y-1 text-[11.5px] leading-relaxed">
+                            <div className="flex items-center justify-between text-violet-200 font-semibold">
+                              <span>Waking up cloud server...</span>
+                              <span className="flex items-center gap-1 font-mono text-[10px] text-violet-300/80 bg-violet-500/20 px-1.5 py-0.5 rounded-md">
+                                <Clock className="w-2.5 h-2.5" />
+                                {loadingSeconds}s
+                              </span>
+                            </div>
+                            <p className="text-zinc-400">
+                              Render spins down after inactivity, so this initial reply can take ~30–50s to boot.
+                            </p>
+                            <p className="text-emerald-400/90 font-medium pt-0.5 flex items-center gap-1">
+                              <Zap className="w-3 h-3 text-emerald-400" />
+                              All follow-up questions will answer instantly!
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
                 )}
 
                 <div ref={endRef} />
@@ -396,7 +454,6 @@ export default function ChatWidget() {
         )}
       </AnimatePresence>
 
-      {/* keyframes for the rotating halos (framer can't spin conic gradients) */}
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
