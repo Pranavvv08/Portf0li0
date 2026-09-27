@@ -9,6 +9,7 @@ import {
   Zap,
   Server,
   Clock,
+  MessageSquare,
 } from "lucide-react";
 
 const STARTER_PROMPTS = [
@@ -18,6 +19,7 @@ const STARTER_PROMPTS = [
   { icon: Send, label: "Contact", query: "How can I contact you?" },
 ];
 
+/* ---------- rich text formatting for assistant answers ---------- */
 function formatInline(text) {
   const regex = /(\[[^\]]+\]\([^)]+\)|`[^`]+`|\*\*[^*]+\*\*)/g;
   const parts = text.split(regex);
@@ -104,6 +106,9 @@ export default function ChatWidget() {
   const [hasReceivedFirstResponse, setHasReceivedFirstResponse] = useState(false);
   const [loadingSeconds, setLoadingSeconds] = useState(0);
 
+  // Auto greeting tooltip state
+  const [showGreeting, setShowGreeting] = useState(false);
+
   const endRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -114,10 +119,27 @@ export default function ChatWidget() {
     scrollToBottom();
   }, [messages, isTyping, isOpen, loadingSeconds]);
 
+  // Show greeting pop-up after 1.8 seconds, auto-dismiss after 8.5 seconds
+  useEffect(() => {
+    const showTimer = setTimeout(() => {
+      setShowGreeting(true);
+    }, 1800);
+
+    const hideTimer = setTimeout(() => {
+      setShowGreeting(false);
+    }, 9500);
+
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
+      setShowGreeting(false);
       setTimeout(() => inputRef.current?.focus(), 350);
-      // Close on escape key
+
       const handleKeyDown = (e) => {
         if (e.key === "Escape") setIsOpen(false);
       };
@@ -126,7 +148,7 @@ export default function ChatWidget() {
     }
   }, [isOpen]);
 
-  // Timer for first response to show live counter while server is waking up
+  // Cold start timer
   useEffect(() => {
     let timer;
     if (isTyping && !hasReceivedFirstResponse) {
@@ -189,7 +211,7 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* ============ BACKGROUND BACKDROP (BLURS PAGE & CLOSES ON CLICK) ============ */}
+      {/* ============ BACKGROUND BACKDROP ============ */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -199,20 +221,76 @@ export default function ChatWidget() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 z-[9998] bg-black/55 backdrop-blur-[4px] cursor-pointer"
+            className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-[3px] cursor-pointer"
             aria-label="Close chat overlay"
           />
         )}
       </AnimatePresence>
 
       <div className="font-sans">
-        {/* ============ LAUNCHER ORB ============ */}
+        {/* ============ LAUNCHER ORB & GREETING TOOLTIP ============ */}
         <AnimatePresence>
           {!isOpen && (
             <motion.div
               key="orb-container"
-              className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-[9997]"
+              className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9997] flex items-center"
             >
+              {/* Pop-up greeting banner */}
+              <AnimatePresence>
+                {showGreeting && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.85, x: 15 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.85, x: 10 }}
+                    transition={{ type: "spring", damping: 18, stiffness: 280 }}
+                    onClick={() => {
+                      setShowGreeting(false);
+                      setIsOpen(true);
+                    }}
+                    className="
+                      cursor-pointer select-none
+                      absolute right-[calc(100%+12px)] bottom-1 sm:bottom-2
+                      w-[240px] sm:w-[270px]
+                      p-3 sm:p-3.5 rounded-2xl
+                      bg-zinc-950/95 border border-violet-500/40
+                      shadow-[0_8px_30px_rgba(0,0,0,0.6),0_0_25px_rgba(139,92,246,0.25)]
+                      backdrop-blur-xl
+                    "
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <div className="mt-0.5 w-6 h-6 shrink-0 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-[0_0_10px_rgba(139,92,246,0.6)]">
+                        <Sparkles className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div className="flex-1 pr-3">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[12.5px] font-bold text-white tracking-tight">
+                            Pranav's AI
+                          </span>
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-snug text-zinc-300">
+                          Ask me about Pranav's projects, technical skills, or experience!
+                        </p>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowGreeting(false);
+                        }}
+                        className="p-1 -mr-1 -mt-1 text-zinc-400 hover:text-white rounded-md transition-colors"
+                        title="Dismiss"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {/* Speech bubble arrow pointing right towards the orb */}
+                    <div className="absolute -right-2 bottom-4 w-0 h-0 border-y-[6px] border-y-transparent border-l-[8px] border-l-violet-500/40" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Launcher orb button */}
               <motion.button
                 key="orb"
                 initial={{ scale: 0, opacity: 0, rotate: -90 }}
@@ -246,38 +324,34 @@ export default function ChatWidget() {
                 >
                   <span className="absolute -top-[3px] left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-fuchsia-400 shadow-[0_0_10px_#e879f9]" />
                 </span>
-                {/* label pill */}
-                <span className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-full bg-zinc-950/95 border border-violet-500/40 px-3 py-1 sm:px-3.5 sm:py-1.5 text-xs font-medium text-violet-200 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shadow-[0_0_20px_rgba(124,58,237,0.4)] hidden xs:block">
-                  Ask my AI ✦
-                </span>
               </motion.button>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ============ CHAT PANEL ============ */}
+        {/* ============ CHAT PANEL (RESPONSIVE & MOBILE-OPTIMIZED) ============ */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
               key="panel"
-              initial={{ opacity: 0, scale: 0.9, y: 24 }}
+              initial={{ opacity: 0, scale: 0.92, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              exit={{ opacity: 0, scale: 0.92, y: 25 }}
               transition={{ type: "spring", damping: 25, stiffness: 320 }}
               style={{ transformOrigin: "bottom right" }}
               className="
                 fixed z-[9999]
-                bottom-2 left-2 right-2 sm:left-auto sm:bottom-6 sm:right-6
-                w-auto sm:w-[420px]
-                h-[min(620px,calc(100dvh-1.25rem))]
-                rounded-[28px] sm:rounded-3xl overflow-hidden
-                shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7),0_0_35px_rgba(139,92,246,0.25)]
+                bottom-0 left-0 right-0 sm:left-auto sm:bottom-6 sm:right-6
+                w-full sm:w-[420px]
+                h-[88dvh] sm:h-[min(620px,calc(100dvh-5rem))]
+                rounded-t-[32px] sm:rounded-3xl overflow-hidden
+                shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8),0_0_35px_rgba(139,92,246,0.3)]
               "
               onClick={(e) => e.stopPropagation()}
             >
               {/* animated gradient border */}
               <div
-                className="absolute -inset-[2px] rounded-[28px] sm:rounded-3xl opacity-80 blur-[2px]"
+                className="absolute -inset-[2px] rounded-t-[32px] sm:rounded-3xl opacity-80 blur-[2px]"
                 style={{
                   background:
                     "conic-gradient(from var(--angle,0deg), #7c3aed, #d946ef, #4f46e5, #7c3aed)",
@@ -285,13 +359,13 @@ export default function ChatWidget() {
                 }}
               />
 
-              <div className="relative flex flex-col h-full bg-zinc-950/95 backdrop-blur-2xl rounded-[28px] sm:rounded-3xl overflow-hidden border border-white/10">
-                {/* mobile pull handle */}
-                <div className="sm:hidden pt-2 flex justify-center">
-                  <div className="w-10 h-1 rounded-full bg-zinc-700/60" />
+              <div className="relative flex flex-col h-full bg-zinc-950/95 backdrop-blur-2xl rounded-t-[32px] sm:rounded-3xl overflow-hidden border border-white/10">
+                {/* mobile pull bar */}
+                <div className="sm:hidden pt-2.5 pb-1 flex justify-center">
+                  <div className="w-12 h-1.5 rounded-full bg-zinc-700/60" />
                 </div>
 
-                {/* aurora background blobs */}
+                {/* aurora blobs */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
                   <div className="absolute -top-20 -left-16 w-56 h-56 rounded-full bg-violet-600/25 blur-3xl" />
                   <div className="absolute top-1/3 -right-20 w-64 h-64 rounded-full bg-fuchsia-600/15 blur-3xl" />
@@ -299,10 +373,9 @@ export default function ChatWidget() {
                 </div>
 
                 {/* ---------- HEADER ---------- */}
-                <div className="relative px-4 sm:px-5 pt-3.5 sm:pt-4 pb-3.5">
+                <div className="relative px-4 sm:px-5 pt-2 sm:pt-4 pb-3.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      {/* breathing avatar */}
                       <div className="relative">
                         <motion.div
                           animate={{
@@ -354,7 +427,6 @@ export default function ChatWidget() {
                       </button>
                     </div>
                   </div>
-                  {/* hairline gradient divider */}
                   <div className="absolute bottom-0 left-4 right-4 sm:left-5 sm:right-5 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
                 </div>
 
@@ -480,7 +552,7 @@ export default function ChatWidget() {
                 )}
 
                 {/* ---------- INPUT ---------- */}
-                <div className="relative p-3 sm:p-3.5 pt-1.5 sm:pt-2">
+                <div className="relative p-3 sm:p-3.5 pt-1.5 sm:pt-2 pb-safe sm:pb-3.5">
                   <div className="relative flex items-center gap-2 rounded-2xl bg-white/[0.06] border border-white/10 focus-within:border-violet-400/60 focus-within:bg-white/[0.08] focus-within:shadow-[0_0_0_3px_rgba(139,92,246,0.15)] transition-all duration-300">
                     <input
                       ref={inputRef}
